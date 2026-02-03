@@ -4,7 +4,7 @@ import { TravelPlan } from '../types';
 import PlaceCard from './PlaceCard';
 import Logistics from './Logistics';
 import NearbyPlaces from './NearbyPlaces';
-import { Printer, RefreshCw, Send, Plus, Calendar, Map, CloudSun } from 'lucide-react';
+import { Printer, RefreshCw, Send, Plus, Calendar, MapPin, CloudSun, Map } from 'lucide-react';
 
 interface ItineraryViewProps {
   plan: TravelPlan;
@@ -34,109 +34,130 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
   };
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in pb-12">
+    <div className="max-w-4xl mx-auto animate-fade-in pb-20">
       
-      {/* Header Summary Card */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 mb-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+      {/* Hero Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl shadow-2xl shadow-slate-200/50 mb-10 p-8 md:p-12 print:bg-white print:text-black print:shadow-none print:border print:p-0">
+        {/* Decorative Circles */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-brand-500 opacity-10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-                <div className="flex items-center gap-2 text-brand-600 text-sm font-bold uppercase tracking-wider mb-1">
-                    <Map className="w-4 h-4" /> Seyahat Planı
+                <div className="flex items-center gap-2 text-brand-300 text-xs font-bold uppercase tracking-[0.2em] mb-3">
+                    <Map className="w-4 h-4" /> Seyahat Rotası
                 </div>
-                <h1 className="text-3xl font-extrabold text-slate-900">{plan.destination}</h1>
-                <p className="text-slate-500 mt-1 flex items-center gap-2">
-                    <span className="bg-slate-100 px-2 py-0.5 rounded text-xs font-medium text-slate-600">Konaklama</span> 
-                    {plan.hotel || 'Belirtilmedi'}
-                </p>
+                <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-2">
+                    {plan.destination}
+                </h1>
+                <div className="flex flex-wrap items-center gap-4 text-slate-300 font-medium text-sm md:text-base">
+                    <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/5">
+                        <MapPin className="w-4 h-4 text-brand-400" />
+                        {plan.hotel || 'Merkez Konaklama'}
+                    </span>
+                    <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/5">
+                        <Calendar className="w-4 h-4 text-brand-400" />
+                        {plan.itinerary.length} Günlük Plan
+                    </span>
+                </div>
             </div>
+
             <div className="flex items-center gap-3 no-print">
                 <button 
                     onClick={() => setShowUpdateInput(!showUpdateInput)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors text-sm"
+                    className="group flex items-center gap-2 px-5 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl text-white font-semibold hover:bg-white/20 transition-all text-sm"
                 >
-                    <Plus className="w-4 h-4" /> Düzenle
+                    <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" /> 
+                    <span className="hidden sm:inline">Düzenle</span>
                 </button>
                 <button 
                     onClick={handlePrint}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 text-sm"
+                    className="group flex items-center gap-2 px-5 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-brand-50 transition-colors shadow-lg shadow-black/20 text-sm"
                 >
-                    <Printer className="w-4 h-4" /> PDF / Yazdır
+                    <Printer className="w-4 h-4 group-hover:scale-110 transition-transform" /> 
+                    <span className="hidden sm:inline">PDF / Yazdır</span>
                 </button>
             </div>
         </div>
-
-        {/* Update Input */}
-        {(showUpdateInput || isUpdating) && (
-            <div className="bg-brand-50 border border-brand-100 p-4 rounded-lg mb-4 no-print">
-                <form onSubmit={handleUpdateSubmit} className="flex gap-3">
-                    <input 
-                        type="text" 
-                        value={updateRequest}
-                        onChange={(e) => setUpdateRequest(e.target.value)}
-                        placeholder="Plan üzerinde yapmak istediğiniz değişikliği yazın..."
-                        className="flex-1 px-4 py-2 rounded-md border border-brand-200 bg-white text-slate-900 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500 placeholder:text-slate-400"
-                        disabled={isUpdating}
-                    />
-                    <button 
-                        type="submit" 
-                        disabled={isUpdating || !updateRequest.trim()}
-                        className="bg-brand-600 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-brand-700 transition-colors flex items-center gap-2"
-                    >
-                        {isUpdating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-                        {isUpdating ? '...' : 'Uygula'}
-                    </button>
-                </form>
-            </div>
-        )}
-        
-        {/* Logistics Summary */}
-        <Logistics logistics={plan.logistics} food={plan.foodGuide} />
       </div>
 
+      {/* Update Input Area */}
+      {(showUpdateInput || isUpdating) && (
+          <div className="bg-white/80 backdrop-blur-xl border border-brand-100 p-1 rounded-2xl mb-8 shadow-xl shadow-brand-100/50 no-print sticky top-24 z-40">
+              <form onSubmit={handleUpdateSubmit} className="flex gap-2">
+                  <input 
+                      type="text" 
+                      value={updateRequest}
+                      onChange={(e) => setUpdateRequest(e.target.value)}
+                      placeholder="Plan üzerinde ne değiştirmek istersiniz? (Örn: 2. güne öğle yemeği ekle...)"
+                      className="flex-1 px-6 py-4 rounded-xl bg-transparent text-slate-800 text-sm font-medium focus:outline-none placeholder:text-slate-400"
+                      disabled={isUpdating}
+                  />
+                  <button 
+                      type="submit" 
+                      disabled={isUpdating || !updateRequest.trim()}
+                      className="bg-slate-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-lg"
+                  >
+                      {isUpdating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      {isUpdating ? 'Güncelleniyor...' : 'Uygula'}
+                  </button>
+              </form>
+          </div>
+      )}
+      
+      {/* Logistics & Tips Section */}
+      <Logistics logistics={plan.logistics} food={plan.foodGuide} />
+
       {/* Main Timeline Itinerary */}
-      <div className="space-y-12">
+      <div className="space-y-16 mt-16">
         {plan.itinerary.map((day) => (
-          <div key={day.dayNumber} className="relative">
+          <div key={day.dayNumber} className="relative group">
             
-            {/* Day Header - Sticky for web, static for print */}
-            <div className="sticky top-16 z-30 bg-slate-50/95 backdrop-blur py-4 border-b border-slate-200 mb-8 print:static print:bg-white print:border-b-2 print:mb-4">
-               <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex flex-col items-center justify-center shadow-lg shrink-0 print:border print:border-black">
-                          <span className="text-[10px] font-medium uppercase opacity-60">Gün</span>
-                          <span className="text-xl font-bold leading-none">{day.dayNumber}</span>
+            {/* Day Header - Sticky & Floating */}
+            <div className="sticky top-4 z-30 mb-8 print:static print:mb-4">
+               <div className="relative overflow-hidden bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-lg shadow-slate-200/40 rounded-2xl p-4 flex items-center justify-between transition-all print:shadow-none print:border-none print:bg-transparent print:p-0">
+                   {/* Background Gradient Line */}
+                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 opacity-20"></div>
+
+                   <div className="flex items-center gap-5">
+                      <div className="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-950 text-white rounded-2xl shadow-lg shrink-0 print:border print:border-black print:bg-white print:text-black">
+                          <span className="text-[10px] font-bold uppercase opacity-60 tracking-wider">Gün</span>
+                          <span className="text-2xl font-black leading-none">{day.dayNumber}</span>
                       </div>
                       <div>
-                          <h2 className="text-xl font-bold text-slate-800">{day.title}</h2>
-                          <p className="text-sm text-slate-500 flex items-center gap-1">
-                              <Calendar className="w-3 h-3" /> {day.date || 'Tarih Belirtilmedi'}
+                          <h2 className="text-xl font-bold text-slate-900 tracking-tight">{day.title}</h2>
+                          <p className="text-sm font-medium text-slate-500 flex items-center gap-1.5 mt-0.5">
+                              <Calendar className="w-3.5 h-3.5" /> 
+                              {day.date || `Seyahatin ${day.dayNumber}. Günü`}
                           </p>
                       </div>
                    </div>
 
                    {/* Weather Badge */}
                    {day.weatherForecast && (
-                       <div className="flex flex-col items-end justify-center px-4 border-l border-slate-200 hidden sm:flex print:flex">
-                           <div className="flex items-center gap-1.5 text-brand-600 font-bold text-sm">
-                               <CloudSun className="w-4 h-4" />
-                               <span>Hava Durumu</span>
+                       <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
+                           <div className="p-2 bg-white rounded-full shadow-sm">
+                                <CloudSun className="w-5 h-5 text-orange-500" />
                            </div>
-                           <span className="text-xs text-slate-600 font-medium">{day.weatherForecast}</span>
+                           <div className="flex flex-col text-right">
+                                <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Tahmin</span>
+                                <span className="text-sm font-bold text-slate-700">{day.weatherForecast}</span>
+                           </div>
                        </div>
                    )}
                </div>
                
-               {/* Mobile Weather (visible only on small screens) */}
+               {/* Mobile Weather Pill */}
                {day.weatherForecast && (
-                  <div className="mt-3 flex items-center gap-2 sm:hidden text-xs text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200 inline-flex print:hidden">
-                      <CloudSun className="w-3 h-3 text-brand-500" />
+                  <div className="mt-2 flex sm:hidden items-center justify-center gap-2 text-xs font-semibold text-slate-600 bg-white/80 backdrop-blur px-4 py-2 rounded-full border border-slate-200 shadow-sm mx-auto w-max">
+                      <CloudSun className="w-3.5 h-3.5 text-orange-500" />
                       {day.weatherForecast}
                   </div>
                )}
             </div>
 
             {/* Activities Timeline */}
-            <div className="">
+            <div className="pl-4 sm:pl-8">
                {day.activities.map((activity, index) => (
                  <PlaceCard 
                     key={index} 
@@ -150,8 +171,8 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
         ))}
       </div>
 
-      {/* Nearby Places */}
-      <div className="mt-12">
+      {/* Nearby Places Section */}
+      <div className="mt-20">
         <NearbyPlaces 
             recommendations={plan.nearbyRecommendations} 
             onAddToRoute={handleAddRecommendation}
@@ -159,8 +180,11 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
         />
       </div>
 
-      <div className="mt-12 pt-8 border-t border-slate-200 text-center text-slate-400 text-xs no-print">
-        <p>&copy; {new Date().getFullYear()} GeziRota AI. Profesyonel Seyahat Asistanı.</p>
+      <div className="mt-20 pt-10 border-t border-slate-200 flex flex-col items-center justify-center text-center gap-4 no-print opacity-60 hover:opacity-100 transition-opacity">
+        <Map className="w-8 h-8 text-slate-300" />
+        <p className="text-xs font-medium text-slate-400">
+            &copy; {new Date().getFullYear()} GeziRota AI<br/>Profesyonel Seyahat Asistanı
+        </p>
       </div>
     </div>
   );
