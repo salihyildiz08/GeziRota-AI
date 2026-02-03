@@ -26,9 +26,11 @@ const travelPlanSchema: Schema = {
       type: Type.OBJECT,
       properties: {
         carRentalAdvice: { type: Type.STRING, description: "Detailed advice on WHERE and HOW to rent a car if needed, and if it's logical." },
+        carRentalCost: { type: Type.STRING, description: "Estimated daily cost for renting a standard car (e.g. 'Günlük 40-50€')." },
         generalTransportTips: { type: Type.STRING, description: "General public transport card names, taxi apps, etc." },
+        publicTransportCost: { type: Type.STRING, description: "Estimated cost for a single ticket or day pass (e.g. 'Metro 2.50€, Günlük Kart 8€')." },
       },
-      required: ["carRentalAdvice", "generalTransportTips"]
+      required: ["carRentalAdvice", "carRentalCost", "generalTransportTips", "publicTransportCost"]
     },
     nearbyRecommendations: {
       type: Type.ARRAY,
@@ -46,7 +48,7 @@ const travelPlanSchema: Schema = {
     },
     culinaryGuide: {
       type: Type.OBJECT,
-      description: "A detailed guide about what to eat and WHERE to eat it.",
+      description: "A detailed guide about what to eat, WHERE to eat it, and how much it costs.",
       properties: {
         savoryDelights: { 
             type: Type.ARRAY, 
@@ -56,7 +58,8 @@ const travelPlanSchema: Schema = {
                 properties: {
                     name: { type: Type.STRING, description: "Local name of the dish" },
                     description: { type: Type.STRING, description: "Short appetizing description of ingredients" },
-                    bestPlaces: { type: Type.STRING, description: "Names of 1-2 specific famous restaurants known for THIS dish." }
+                    bestPlaces: { type: Type.STRING, description: "Names of 1-2 specific famous restaurants known for THIS dish." },
+                    priceRange: { type: Type.STRING, description: "Average price per person for this meal (e.g. '15-20€', '250-300 TL')." }
                 } 
             } 
         },
@@ -68,7 +71,8 @@ const travelPlanSchema: Schema = {
                 properties: {
                     name: { type: Type.STRING },
                     description: { type: Type.STRING },
-                    bestPlaces: { type: Type.STRING }
+                    bestPlaces: { type: Type.STRING },
+                    priceRange: { type: Type.STRING }
                 } 
             } 
         },
@@ -80,7 +84,8 @@ const travelPlanSchema: Schema = {
                 properties: {
                     name: { type: Type.STRING },
                     description: { type: Type.STRING },
-                    bestPlaces: { type: Type.STRING }
+                    bestPlaces: { type: Type.STRING },
+                    priceRange: { type: Type.STRING }
                 } 
             } 
         },
@@ -109,10 +114,14 @@ const travelPlanSchema: Schema = {
                 locationHint: { type: Type.STRING },
                 transportDetail: { 
                     type: Type.STRING, 
-                    description: "Specific instruction on how to get HERE from the PREVIOUS activity. If this is the FIRST activity of the day, describe how to get here FROM THE HOTEL." 
+                    description: "Specific instruction on how to get HERE from the PREVIOUS activity." 
+                },
+                transportCost: {
+                    type: Type.STRING,
+                    description: "Estimated cost for this specific leg of the journey (e.g. 'Metro 2.50€', 'Taksi ~15€', 'Yürüyüş - Ücretsiz')."
                 }
               },
-              required: ["placeName", "description", "type", "distanceFromPrevious", "estimatedTime", "locationHint", "transportDetail"]
+              required: ["placeName", "description", "type", "distanceFromPrevious", "estimatedTime", "locationHint", "transportDetail", "transportCost"]
             }
           }
         },
@@ -162,9 +171,10 @@ export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan
 
       3. **Logic**: Reset the location context every morning. Do not calculate travel time from Day 1 Night to Day 2 Morning. Day 2 Morning starts fresh from the hotel base.
 
-      CRITICAL CULINARY RULES:
+      CRITICAL CULINARY & LOGISTICS RULES:
       1. **Specific Recommendations**: Do NOT just list "Pizza". List "Pizza Margherita" and for 'bestPlaces' provide a REAL, FAMOUS restaurant name in that city (e.g., "L'Antica Pizzeria da Michele").
       2. **Professional Descriptions**: Describe the food appetizingly (ingredients, taste profile).
+      3. **Costs**: Include realistic estimated costs for transport (ticket prices, daily rental, specific trip cost) and food (average meal price) in the destination's local currency or Euro/USD.
       
       Requirements:
       1. Language: Turkish (TR).

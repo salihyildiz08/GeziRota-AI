@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Activity } from '../types';
-import { MapPin, Clock, Navigation, BedDouble, Plane, Utensils, Star, Info, Bus, ArrowDown } from 'lucide-react';
+import { MapPin, Clock, Navigation, BedDouble, Plane, Utensils, Star, Info, Bus, Wallet } from 'lucide-react';
 
 interface PlaceCardProps {
   activity: Activity;
@@ -77,14 +77,22 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ activity, isLast, index }) => {
         
         {/* Transport Connector (Header of Card) */}
         {activity.transportDetail && (
-            <div className="bg-slate-50 border-b border-slate-100 px-5 py-3 flex items-start gap-3">
-                <div className="p-1.5 bg-white rounded-lg shadow-sm border border-slate-100 shrink-0 mt-0.5">
-                   {activity.type === 'airport' ? <Info className="w-3.5 h-3.5 text-slate-400" /> : <Bus className="w-3.5 h-3.5 text-brand-500" />}
+            <div className="bg-slate-50 border-b border-slate-100 px-5 py-3 flex items-start gap-3 justify-between">
+                <div className="flex items-start gap-3">
+                    <div className="p-1.5 bg-white rounded-lg shadow-sm border border-slate-100 shrink-0 mt-0.5">
+                    {activity.type === 'airport' ? <Info className="w-3.5 h-3.5 text-slate-400" /> : <Bus className="w-3.5 h-3.5 text-brand-500" />}
+                    </div>
+                    <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Oraya Nasıl Gidilir?</span>
+                        <p className="text-xs text-slate-600 font-medium leading-relaxed">{activity.transportDetail}</p>
+                    </div>
                 </div>
-                <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Oraya Nasıl Gidilir?</span>
-                    <p className="text-xs text-slate-600 font-medium leading-relaxed">{activity.transportDetail}</p>
-                </div>
+                {activity.transportCost && (
+                     <div className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-lg border border-slate-200 shadow-sm ml-2 print:border-slate-300">
+                        <Wallet className="w-3 h-3 text-emerald-600" />
+                        <span className="text-[10px] font-bold text-slate-700">{activity.transportCost}</span>
+                     </div>
+                )}
             </div>
         )}
 

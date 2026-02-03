@@ -17,6 +17,7 @@ export interface Activity {
   estimatedTime: string;
   locationHint: string;
   transportDetail: string;
+  transportCost: string; // New field for specific trip cost
 }
 
 export interface DayPlan {
@@ -32,6 +33,7 @@ export interface CulinaryItem {
   name: string;
   description: string;
   bestPlaces: string; // Specific restaurants for this item
+  priceRange: string; // e.g. "10-15€ Kişi Başı"
 }
 
 export interface CulinaryGuide {
@@ -42,7 +44,9 @@ export interface CulinaryGuide {
 
 export interface Logistics {
   carRentalAdvice: string;
+  carRentalCost: string; // Estimated cost
   generalTransportTips: string;
+  publicTransportCost: string; // Estimated cost
 }
 
 export interface Recommendation {

@@ -37,26 +37,26 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
     <div className="max-w-4xl mx-auto animate-fade-in pb-20">
       
       {/* Hero Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl shadow-2xl shadow-slate-200/50 mb-10 p-8 md:p-12 print:bg-white print:text-black print:shadow-none print:border print:p-0">
-        {/* Decorative Circles */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-brand-500 opacity-10 rounded-full blur-2xl pointer-events-none"></div>
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl shadow-2xl shadow-slate-200/50 mb-10 p-8 md:p-12 print:bg-white print:text-black print:shadow-none print:border print:border-slate-300 print:p-6">
+        {/* Decorative Circles - Hidden in Print */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl pointer-events-none print:hidden"></div>
+        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-brand-500 opacity-10 rounded-full blur-2xl pointer-events-none print:hidden"></div>
 
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-                <div className="flex items-center gap-2 text-brand-300 text-xs font-bold uppercase tracking-[0.2em] mb-3">
+                <div className="flex items-center gap-2 text-brand-300 text-xs font-bold uppercase tracking-[0.2em] mb-3 print:text-slate-500">
                     <Map className="w-4 h-4" /> Seyahat Rotası
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-2">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-2 print:text-black">
                     {plan.destination}
                 </h1>
-                <div className="flex flex-wrap items-center gap-4 text-slate-300 font-medium text-sm md:text-base">
-                    <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/5">
-                        <MapPin className="w-4 h-4 text-brand-400" />
+                <div className="flex flex-wrap items-center gap-4 text-slate-300 font-medium text-sm md:text-base print:text-slate-700">
+                    <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/5 print:bg-transparent print:border-slate-200 print:px-0">
+                        <MapPin className="w-4 h-4 text-brand-400 print:text-slate-800" />
                         {plan.hotel || 'Merkez Konaklama'}
                     </span>
-                    <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/5">
-                        <Calendar className="w-4 h-4 text-brand-400" />
+                    <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/5 print:bg-transparent print:border-slate-200 print:px-0">
+                        <Calendar className="w-4 h-4 text-brand-400 print:text-slate-800" />
                         {plan.itinerary.length} Günlük Plan
                     </span>
                 </div>
@@ -116,8 +116,11 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
             {/* Day Header - Sticky & Floating */}
             <div className="sticky top-4 z-30 mb-8 print:static print:mb-4">
                <div className="relative overflow-hidden bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-lg shadow-slate-200/40 rounded-2xl p-4 flex items-center justify-between transition-all print:shadow-none print:border-none print:bg-transparent print:p-0">
-                   {/* Background Gradient Line */}
-                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 opacity-20"></div>
+                   {/* Background Gradient Line - Hide in Print */}
+                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500 opacity-20 print:hidden"></div>
+                   
+                   {/* Print-only separator */}
+                   <div className="hidden print:block absolute bottom-0 left-0 w-full h-[1px] bg-slate-200"></div>
 
                    <div className="flex items-center gap-5">
                       <div className="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-950 text-white rounded-2xl shadow-lg shrink-0 print:border print:border-black print:bg-white print:text-black">
@@ -135,8 +138,8 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
 
                    {/* Weather Badge */}
                    {day.weatherForecast && (
-                       <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
-                           <div className="p-2 bg-white rounded-full shadow-sm">
+                       <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100 print:border-slate-300">
+                           <div className="p-2 bg-white rounded-full shadow-sm print:shadow-none print:border print:border-slate-200">
                                 <CloudSun className="w-5 h-5 text-orange-500" />
                            </div>
                            <div className="flex flex-col text-right">

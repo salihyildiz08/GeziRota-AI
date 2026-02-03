@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import ItineraryView from './components/ItineraryView';
@@ -12,12 +13,25 @@ const App: React.FC = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedPlan = localStorage.getItem('gezirota_plan');
+      if (savedPlan) {
+        setTravelPlan(JSON.parse(savedPlan));
+      }
+    } catch (e) {
+      console.error("Failed to load plan from storage", e);
+    }
+  }, []);
+
   const handleCreatePlan = async (input: TravelInput) => {
     setLoading(true);
     setError(null);
     try {
       const plan = await generateTravelPlan(input);
       setTravelPlan(plan);
+      localStorage.setItem('gezirota_plan', JSON.stringify(plan));
     } catch (err: any) {
       setError(err.message || "Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
@@ -32,6 +46,7 @@ const App: React.FC = () => {
     try {
       const updatedPlan = await updateTravelPlan(travelPlan, request);
       setTravelPlan(updatedPlan);
+      localStorage.setItem('gezirota_plan', JSON.stringify(updatedPlan));
     } catch (err: any) {
       setError("Plan güncellenirken bir sorun oluştu.");
     } finally {
@@ -39,9 +54,16 @@ const App: React.FC = () => {
     }
   };
 
+  const handleReset = () => {
+    if (window.confirm("Mevcut rotayı silip yeni bir plan oluşturmak istediğinize emin misiniz?")) {
+      setTravelPlan(null);
+      localStorage.removeItem('gezirota_plan');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 pb-20 font-sans">
-      <Header />
+      <Header hasPlan={!!travelPlan} onReset={handleReset} />
       
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         

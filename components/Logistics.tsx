@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Logistics as LogisticsType, CulinaryGuide, CulinaryItem } from '../types';
-import { Car, Utensils, Coffee, IceCream, Bus, ChefHat, MapPin } from 'lucide-react';
+import { Car, Utensils, Coffee, IceCream, Bus, ChefHat, MapPin, Wallet } from 'lucide-react';
 
 interface LogisticsProps {
   logistics: LogisticsType;
@@ -15,6 +15,11 @@ const Logistics: React.FC<LogisticsProps> = ({ logistics, food }) => {
     <div key={idx} className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm mb-3 last:mb-0 hover:shadow-md transition-shadow print:shadow-none print:border-slate-300 print:mb-4 print:break-inside-avoid">
         <div className="flex justify-between items-start mb-2">
             <h4 className="font-bold text-slate-900 text-sm">{item.name}</h4>
+            {item.priceRange && (
+                <span className="shrink-0 ml-2 px-2 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-100 print:bg-transparent print:border-slate-200 print:text-slate-600">
+                    {item.priceRange}
+                </span>
+            )}
         </div>
         <p className="text-xs text-slate-500 mb-3 italic leading-relaxed print:text-slate-700">
             "{item.description}"
@@ -46,18 +51,30 @@ const Logistics: React.FC<LogisticsProps> = ({ logistics, food }) => {
             <h4 className="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
                 Araç Kiralamalı mı?
             </h4>
-            <p className="text-slate-600 text-sm leading-relaxed text-justify">
+            <p className="text-slate-600 text-sm leading-relaxed text-justify mb-2">
               {logistics.carRentalAdvice}
             </p>
+            {logistics.carRentalCost && (
+                <div className="flex items-center gap-2 mt-2 text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg w-max print:bg-transparent print:border print:border-slate-200 print:text-slate-700">
+                    <Wallet className="w-3.5 h-3.5" />
+                    Tahmini: {logistics.carRentalCost}
+                </div>
+            )}
           </div>
 
           <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 print:bg-white print:border-slate-200 print:p-0 print:pt-4">
             <h4 className="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
                 <Bus className="w-4 h-4 text-slate-500"/> Şehir İçi Ulaşım İpuçları
             </h4>
-            <p className="text-slate-600 text-sm leading-relaxed text-justify">
+            <p className="text-slate-600 text-sm leading-relaxed text-justify mb-2">
               {logistics.generalTransportTips}
             </p>
+             {logistics.publicTransportCost && (
+                <div className="flex items-center gap-2 mt-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-lg w-max print:border-slate-300">
+                    <Wallet className="w-3.5 h-3.5" />
+                    Bilet/Kart: {logistics.publicTransportCost}
+                </div>
+            )}
           </div>
         </div>
       </div>
