@@ -107,7 +107,10 @@ const travelPlanSchema: Schema = {
               type: Type.OBJECT,
               properties: {
                 placeName: { type: Type.STRING },
-                description: { type: Type.STRING, description: "Concise, professional summary (3-4 sentences)." },
+                description: { 
+                    type: Type.STRING, 
+                    description: "A LONG, DETAILED DESCRIPTION (Minimum 5-6 sentences). Must cover history, architecture, interesting facts, and what to see inside. Do not be brief." 
+                },
                 type: { type: Type.STRING, enum: ["airport", "hotel", "sightseeing", "restaurant", "other"] },
                 distanceFromPrevious: { type: Type.STRING },
                 estimatedTime: { type: Type.STRING },
@@ -177,11 +180,15 @@ export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan
          - **Option 1 (Public)**: Specific Bus Numbers (e.g., 'Bus 40'), Metro Lines (e.g., 'M1 Red Line'), and Station Names.
          - **Option 2 (Taxi/Car)**: Estimated time and convenience.
       3. **Costs**: 'transportCost' must show price for BOTH options (e.g. "Otobüs 2€ / Taksi ~15€").
+      4. **LONG & RICH DESCRIPTIONS**: 
+         - For 'sightseeing' locations, you MUST write **at least 5-6 sentences**.
+         - Include **historical facts** (when it was built, by whom), **architectural details** (style, features), and **cultural significance**.
+         - Act like a professional tour guide. Do not write short summaries. Make it educational and engaging.
       
       Requirements:
       1. Language: Turkish (TR).
       2. Route must be logical (minimize travel time).
-      3. Tone: Professional, informative, concise.
+      3. Tone: Professional, informative, sophisticated.
       4. Weather: Estimate the weather for each day based on historical data for this season/month.
       
       Response MUST be valid JSON matching the schema.
@@ -227,7 +234,7 @@ export const updateTravelPlan = async (currentPlan: TravelPlan, userRequest: str
       
       Task:
       1. Update the 'itinerary', 'culinaryGuide', 'nearbyRecommendations' or 'logistics' based on the user request.
-      2. If updating transport details, ensure to provide specific Bus/Metro lines AND Taxi estimates.
+      2. If updating places, ensure descriptions remain **LONG (min 5 sentences)** and contain historical/cultural depth.
       3. **MAINTAIN THE LOGIC**: Ensure days still start/end at the Hotel.
       4. Language: Turkish.
       
