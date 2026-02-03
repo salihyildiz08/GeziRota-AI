@@ -114,11 +114,11 @@ const travelPlanSchema: Schema = {
                 locationHint: { type: Type.STRING },
                 transportDetail: { 
                     type: Type.STRING, 
-                    description: "Specific instruction on how to get HERE from the PREVIOUS activity." 
+                    description: "DETAILED GUIDE with 2 options: 1. Public Transport (Bus lines, Metro stops). 2. Taxi (Time/Availability)." 
                 },
                 transportCost: {
                     type: Type.STRING,
-                    description: "Estimated cost for this specific leg of the journey (e.g. 'Metro 2.50€', 'Taksi ~15€', 'Yürüyüş - Ücretsiz')."
+                    description: "Estimated cost for this specific leg. Include both Public Transport price and Approx Taxi price (e.g. 'Metro 2€ / Taksi ~15€')."
                 }
               },
               required: ["placeName", "description", "type", "distanceFromPrevious", "estimatedTime", "locationHint", "transportDetail", "transportCost"]
@@ -171,10 +171,12 @@ export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan
 
       3. **Logic**: Reset the location context every morning. Do not calculate travel time from Day 1 Night to Day 2 Morning. Day 2 Morning starts fresh from the hotel base.
 
-      CRITICAL CULINARY & LOGISTICS RULES:
-      1. **Specific Recommendations**: Do NOT just list "Pizza". List "Pizza Margherita" and for 'bestPlaces' provide a REAL, FAMOUS restaurant name in that city (e.g., "L'Antica Pizzeria da Michele").
-      2. **Professional Descriptions**: Describe the food appetizingly (ingredients, taste profile).
-      3. **Costs**: Include realistic estimated costs for transport (ticket prices, daily rental, specific trip cost) and food (average meal price) in the destination's local currency or Euro/USD.
+      CRITICAL CONTENT RULES:
+      1. **Specific Recommendations**: Do NOT just list "Pizza". List "Pizza Margherita" and for 'bestPlaces' provide a REAL, FAMOUS restaurant name.
+      2. **Detailed Transport**: For 'transportDetail', you MUST provide TWO options:
+         - **Option 1 (Public)**: Specific Bus Numbers (e.g., 'Bus 40'), Metro Lines (e.g., 'M1 Red Line'), and Station Names.
+         - **Option 2 (Taxi/Car)**: Estimated time and convenience.
+      3. **Costs**: 'transportCost' must show price for BOTH options (e.g. "Otobüs 2€ / Taksi ~15€").
       
       Requirements:
       1. Language: Turkish (TR).
@@ -225,7 +227,7 @@ export const updateTravelPlan = async (currentPlan: TravelPlan, userRequest: str
       
       Task:
       1. Update the 'itinerary', 'culinaryGuide', 'nearbyRecommendations' or 'logistics' based on the user request.
-      2. If updating food, ensure to provide descriptions and specific restaurant names.
+      2. If updating transport details, ensure to provide specific Bus/Metro lines AND Taxi estimates.
       3. **MAINTAIN THE LOGIC**: Ensure days still start/end at the Hotel.
       4. Language: Turkish.
       
