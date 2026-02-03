@@ -1,9 +1,11 @@
+
 export interface TravelInput {
   departure: string; 
   country: string;
   city: string;
   hotel?: string;
-  days: number;
+  startDate: string;
+  endDate: string;
   transportMode: 'plane' | 'car';
 }
 
@@ -19,7 +21,9 @@ export interface Activity {
 
 export interface DayPlan {
   dayNumber: number;
+  date: string; // New: Specific date for this day
   title: string;
+  weatherForecast: string; // New: Expected weather for this day
   activities: Activity[];
 }
 

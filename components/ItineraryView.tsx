@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { TravelPlan } from '../types';
 import PlaceCard from './PlaceCard';
 import Logistics from './Logistics';
 import NearbyPlaces from './NearbyPlaces';
-import { Printer, RefreshCw, Send, Plus, Calendar, Map } from 'lucide-react';
+import { Printer, RefreshCw, Send, Plus, Calendar, Map, CloudSun } from 'lucide-react';
 
 interface ItineraryViewProps {
   plan: TravelPlan;
@@ -59,7 +60,7 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
                     onClick={handlePrint}
                     className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 text-sm"
                 >
-                    <Printer className="w-4 h-4" /> Yazdır / PDF
+                    <Printer className="w-4 h-4" /> PDF / Yazdır
                 </button>
             </div>
         </div>
@@ -97,20 +98,41 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
         {plan.itinerary.map((day) => (
           <div key={day.dayNumber} className="relative">
             
-            {/* Day Header - Sticky & Bold */}
-            <div className="sticky top-16 z-30 bg-slate-50/95 backdrop-blur py-4 border-b border-slate-200 mb-8 print:static print:bg-transparent">
-               <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex flex-col items-center justify-center shadow-lg">
-                      <span className="text-[10px] font-medium uppercase opacity-60">Gün</span>
-                      <span className="text-xl font-bold leading-none">{day.dayNumber}</span>
-                  </div>
-                  <div>
-                      <h2 className="text-xl font-bold text-slate-800">{day.title}</h2>
-                      <p className="text-sm text-slate-500 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" /> Günlük Rota Planı
-                      </p>
-                  </div>
+            {/* Day Header - Sticky for web, static for print */}
+            <div className="sticky top-16 z-30 bg-slate-50/95 backdrop-blur py-4 border-b border-slate-200 mb-8 print:static print:bg-white print:border-b-2 print:mb-4">
+               <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex flex-col items-center justify-center shadow-lg shrink-0 print:border print:border-black">
+                          <span className="text-[10px] font-medium uppercase opacity-60">Gün</span>
+                          <span className="text-xl font-bold leading-none">{day.dayNumber}</span>
+                      </div>
+                      <div>
+                          <h2 className="text-xl font-bold text-slate-800">{day.title}</h2>
+                          <p className="text-sm text-slate-500 flex items-center gap-1">
+                              <Calendar className="w-3 h-3" /> {day.date || 'Tarih Belirtilmedi'}
+                          </p>
+                      </div>
+                   </div>
+
+                   {/* Weather Badge */}
+                   {day.weatherForecast && (
+                       <div className="flex flex-col items-end justify-center px-4 border-l border-slate-200 hidden sm:flex print:flex">
+                           <div className="flex items-center gap-1.5 text-brand-600 font-bold text-sm">
+                               <CloudSun className="w-4 h-4" />
+                               <span>Hava Durumu</span>
+                           </div>
+                           <span className="text-xs text-slate-600 font-medium">{day.weatherForecast}</span>
+                       </div>
+                   )}
                </div>
+               
+               {/* Mobile Weather (visible only on small screens) */}
+               {day.weatherForecast && (
+                  <div className="mt-3 flex items-center gap-2 sm:hidden text-xs text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200 inline-flex print:hidden">
+                      <CloudSun className="w-3 h-3 text-brand-500" />
+                      {day.weatherForecast}
+                  </div>
+               )}
             </div>
 
             {/* Activities Timeline */}

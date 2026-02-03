@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { TravelInput } from '../types';
-import { Search, Loader2, MapPin, Plane, Car, Calendar, Building2 } from 'lucide-react';
+import { Search, Loader2, MapPin, Plane, Car, Calendar, Building2, ArrowRight } from 'lucide-react';
 
 interface InputFormProps {
   onSubmit: (data: TravelInput) => void;
@@ -13,9 +14,25 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
     country: '',
     city: '',
     hotel: '',
-    days: 3,
+    startDate: '',
+    endDate: '',
     transportMode: 'plane',
   });
+
+  const [duration, setDuration] = useState<number>(0);
+
+  // Auto-calculate days when dates change
+  useEffect(() => {
+    if (formData.startDate && formData.endDate) {
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include starting day
+      setDuration(diffDays > 0 ? diffDays : 0);
+    } else {
+      setDuration(0);
+    }
+  }, [formData.startDate, formData.endDate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,7 +45,14 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.country || !formData.city || !formData.departure) return;
+    if (!formData.country || !formData.city || !formData.departure || !formData.startDate || !formData.endDate) return;
+    
+    // Basic validation
+    if (new Date(formData.endDate) < new Date(formData.startDate)) {
+      alert("Bitiş tarihi başlangıç tarihinden önce olamaz!");
+      return;
+    }
+    
     onSubmit(formData);
   };
 
@@ -112,9 +136,42 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
             </div>
         </div>
 
-        {/* Details */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             <div className="md:col-span-2">
+        {/* Dates & Hotel */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className="">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Seyahat Tarihleri</label>
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="date"
+                            name="startDate"
+                            value={formData.startDate}
+                            onChange={handleChange}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:border-brand-500 outline-none text-sm font-medium"
+                            required
+                        />
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400" />
+                    <div className="relative flex-1">
+                        <input
+                            type="date"
+                            name="endDate"
+                            value={formData.endDate}
+                            onChange={handleChange}
+                            min={formData.startDate}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:border-brand-500 outline-none text-sm font-medium"
+                            required
+                        />
+                    </div>
+                </div>
+                {duration > 0 && (
+                    <p className="text-xs text-brand-600 font-bold mt-2 text-right">
+                        Toplam Süre: {duration} Gün
+                    </p>
+                )}
+            </div>
+
+            <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konaklama (Opsiyonel)</label>
                 <div className="relative">
                     <Building2 className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
@@ -128,22 +185,6 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
                     />
                 </div>
             </div>
-            <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Süre (Gün)</label>
-                <div className="relative">
-                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                    <input
-                        type="number"
-                        name="days"
-                        min="1"
-                        max="14"
-                        value={formData.days}
-                        onChange={handleChange}
-                        className={inputClass}
-                        required
-                    />
-                </div>
-            </div>
         </div>
 
         <div className="pt-4">
@@ -154,7 +195,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
           >
             {isLoading ? (
               <>
-                <Loader2 className="animate-spin w-5 h-5" /> Rota Hesaplanıyor...
+                <Loader2 className="animate-spin w-5 h-5" /> Rota ve Hava Durumu Hesaplanıyor...
               </>
             ) : (
               <>

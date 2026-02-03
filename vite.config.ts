@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
     define: {
       // This is necessary to use process.env.API_KEY in the browser code
       // consistent with the Google Gen AI SDK requirements.
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+      // We use JSON.stringify to safely embed the string value or "undefined".
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || '') 
     }
   };
 });

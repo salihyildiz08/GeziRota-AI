@@ -30,11 +30,49 @@
     </script>
     <style>
       @media print {
+        @page {
+          margin: 1cm;
+          size: auto;
+        }
+        body {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          background-color: white !important;
+          color: black !important;
+        }
+        /* Hide interactive elements */
         .no-print {
           display: none !important;
         }
+        /* Prevent elements from breaking across pages awkwardly */
         .print-break {
+          break-inside: avoid;
           page-break-inside: avoid;
+        }
+        /* Reset widths for full page printing */
+        .max-w-4xl, .max-w-5xl {
+          max-width: 100% !important;
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        /* Remove shadows and borders that look bad in print */
+        .shadow-lg, .shadow-md, .shadow-sm {
+          box-shadow: none !important;
+          border: 1px solid #ccc !important;
+        }
+        /* Fix Sticky headers */
+        .sticky {
+          position: static !important;
+        }
+        /* Ensure inputs and text are readable */
+        input {
+          border: none !important;
+        }
+        /* Specific adjustments for PlaceCard colors */
+        .bg-slate-900 {
+          background-color: #0f172a !important;
+          color: white !important;
         }
       }
     </style>

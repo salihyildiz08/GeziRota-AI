@@ -22,58 +22,44 @@
 *   **Modern Arayüz:** Responsive, kullanıcı dostu ve şık tasarım.
 *   **Yazdırma Desteği:** Oluşturulan planı PDF olarak kaydetme veya yazdırma özelliği.
 
-## 🛠️ Kurulum ve Çalıştırma
+## 🔑 API Anahtarı Kurulumu (Adım Adım)
 
-Bu projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin.
+Bu projenin çalışması için Google Gemini API anahtarı gereklidir.
 
-### 1. Projeyi Klonlayın
+### 1. API Anahtarını Alma
+1.  [Google AI Studio](https://aistudio.google.com/app/apikey) adresine gidin.
+2.  Google hesabınızla giriş yapın.
+3.  **"Get API key"** butonuna tıklayın ve yeni bir anahtar oluşturun.
+4.  `AIza` ile başlayan bu kodu kopyalayın.
 
-```bash
-git clone https://github.com/salihyildiz08/gezirota-ai.git
-cd gezirota-ai
-```
+### 2. Yerel Ortamda (Localhost) Çalıştırma
+1.  Projeyi klonlayın ve klasöre girin:
+    ```bash
+    git clone https://github.com/salihyildiz08/gezirota-ai.git
+    cd gezirota-ai
+    npm install
+    ```
+2.  Ana dizinde `.env` adında bir dosya oluşturun.
+3.  İçine anahtarınızı yapıştırın:
+    ```env
+    API_KEY=AIzaSyD_Sizin_Kopyaladiginiz_Anahtar
+    ```
+4.  Uygulamayı başlatın:
+    ```bash
+    npm run dev
+    ```
 
-### 2. Bağımlılıkları Yükleyin
+## ☁️ Vercel'de Yayınlama ve Token Ayarı
 
-```bash
-npm install
-```
+Projeyi Vercel'e yükledikten sonra API anahtarını tanımlamanız gerekir.
 
-### 3. API Anahtarını Yapılandırın (ÖNEMLİ ⚠️)
-
-Bu proje Google Gemini API kullanmaktadır. Çalışması için geçerli bir API anahtarına ihtiyacınız vardır.
-
-1.  Projenin ana dizininde `.env` adında bir dosya oluşturun.
-2.  [Google AI Studio](https://aistudio.google.com/app/apikey) adresinden ücretsiz bir API anahtarı alın.
-3.  `.env` dosyasına anahtarınızı şu formatta ekleyin:
-
-```env
-API_KEY=AIzaSyD_Sizin_Gizli_Api_Anahtariniz_Buraya
-```
-
-> **Not:** `.env` dosyası `.gitignore` dosyasında ekli olduğu için GitHub'a yüklenmez. Bu sayede anahtarınız güvende kalır.
-
-### 4. Uygulamayı Başlatın
-
-```bash
-npm run dev
-```
-
-Tarayıcınızda `http://localhost:5173` adresine giderek uygulamayı kullanabilirsiniz.
-
-## ☁️ Vercel ile Yayınlama (Deployment)
-
-Bu projeyi Vercel üzerinde ücretsiz olarak yayınlayabilirsiniz.
-
-1.  Projenizi GitHub'a pushlayın.
-2.  [Vercel](https://vercel.com) hesabınıza giriş yapın ve "Add New Project" deyin.
-3.  GitHub reponuzu seçin (Import).
-4.  **Environment Variables** bölümüne gelin:
+1.  **Vercel Paneline Girin:** Projenizi seçin ve **Settings** sekmesine tıklayın.
+2.  **Environment Variables:** Sol menüden bu seçeneği seçin.
+3.  **Değişkeni Ekleyin:**
     *   **Key:** `API_KEY`
-    *   **Value:** `Sizin_Gemini_Api_Anahtariniz`
-5.  **Deploy** butonuna basın.
-
-Vercel, projeyi otomatik olarak derleyecek ve size canlı bir link verecektir.
+    *   **Value:** `AIza...` (Google'dan aldığınız anahtar)
+    *   **Save** butonuna basın.
+4.  **ÖNEMLİ:** Anahtarı ekledikten sonra **Deployments** sekmesine gidip, son deployment'ın yanındaki üç noktaya basarak **Redeploy** yapın. Aksi halde uygulama anahtarı görmeyebilir.
 
 ## 👨‍💻 Geliştirici
 
