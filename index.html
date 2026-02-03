@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
   <head>
@@ -6,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GeziRota AI - Akıllı Seyahat Planlayıcısı</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -31,48 +32,53 @@
     <style>
       @media print {
         @page {
-          margin: 1cm;
-          size: auto;
+          margin: 10mm;
+          size: A4;
         }
         body {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
           background-color: white !important;
           color: black !important;
+          font-size: 11px !important; /* Slightly smaller base font for fitting */
         }
         /* Hide interactive elements */
         .no-print {
           display: none !important;
         }
-        /* Prevent elements from breaking across pages awkwardly */
+        /* Page Break Rules */
         .print-break {
-          break-inside: avoid;
-          page-break-inside: avoid;
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
         }
-        /* Reset widths for full page printing */
-        .max-w-4xl, .max-w-5xl {
-          max-width: 100% !important;
+        
+        /* Reset containers for full width */
+        #root, .max-w-4xl, .max-w-5xl, main {
           width: 100% !important;
+          max-width: 100% !important;
           margin: 0 !important;
           padding: 0 !important;
+          display: block !important;
         }
-        /* Remove shadows and borders that look bad in print */
-        .shadow-lg, .shadow-md, .shadow-sm {
-          box-shadow: none !important;
-          border: 1px solid #ccc !important;
-        }
-        /* Fix Sticky headers */
-        .sticky {
-          position: static !important;
-        }
+        
         /* Ensure inputs and text are readable */
         input {
           border: none !important;
         }
-        /* Specific adjustments for PlaceCard colors */
-        .bg-slate-900 {
-          background-color: #0f172a !important;
-          color: white !important;
+
+        /* Hide heavy gradients/shadows in print for ink saving and readability */
+        .shadow-lg, .shadow-md, .shadow-sm, .shadow-2xl {
+          box-shadow: none !important;
+        }
+        
+        /* Remove background blurs */
+        .backdrop-blur-md, .backdrop-blur-xl {
+          backdrop-filter: none !important;
+        }
+
+        /* Fix Stickies */
+        .sticky {
+          position: static !important;
         }
       }
     </style>

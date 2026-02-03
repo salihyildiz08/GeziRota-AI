@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { TravelInput } from '../types';
-import { Search, Loader2, MapPin, Plane, Car, Calendar, Building2, ArrowRight } from 'lucide-react';
+import { Search, Loader2, MapPin, Plane, Car, Building2, ArrowRight } from 'lucide-react';
 
 interface InputFormProps {
   onSubmit: (data: TravelInput) => void;
@@ -142,24 +142,26 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Seyahat Tarihleri</label>
                 <div className="flex items-center gap-2">
                     <div className="relative flex-1">
+                        {/* Added [color-scheme:light] to force light picker even in dark system mode */}
                         <input
                             type="date"
                             name="startDate"
                             value={formData.startDate}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:border-brand-500 outline-none text-sm font-medium"
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:border-brand-500 outline-none text-sm font-medium [color-scheme:light]"
                             required
                         />
                     </div>
                     <ArrowRight className="w-4 h-4 text-slate-400" />
                     <div className="relative flex-1">
+                         {/* Added [color-scheme:light] to force light picker even in dark system mode */}
                         <input
                             type="date"
                             name="endDate"
                             value={formData.endDate}
                             onChange={handleChange}
                             min={formData.startDate}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:border-brand-500 outline-none text-sm font-medium"
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 focus:border-brand-500 outline-none text-sm font-medium [color-scheme:light]"
                             required
                         />
                     </div>
