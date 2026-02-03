@@ -16,22 +16,28 @@ export interface Activity {
   distanceFromPrevious: string;
   estimatedTime: string;
   locationHint: string;
-  transportDetail: string; // New: How to get here from previous location
+  transportDetail: string;
 }
 
 export interface DayPlan {
   dayNumber: number;
-  date: string; // New: Specific date for this day
+  date: string;
   title: string;
-  weatherForecast: string; // New: Expected weather for this day
+  weatherForecast: string;
   activities: Activity[];
 }
 
-export interface FoodGuide {
-  dishes: string[];
-  desserts: string[];
-  drinks: string[];
-  restaurantRecommendations: string[];
+// New detailed culinary structures
+export interface CulinaryItem {
+  name: string;
+  description: string;
+  bestPlaces: string; // Specific restaurants for this item
+}
+
+export interface CulinaryGuide {
+  savoryDelights: CulinaryItem[]; // Yemekler
+  sweetTreats: CulinaryItem[];    // Tatlılar
+  localDrinks: CulinaryItem[];    // İçecekler
 }
 
 export interface Logistics {
@@ -50,7 +56,7 @@ export interface TravelPlan {
   destination: string;
   hotel: string;
   logistics: Logistics;
-  foodGuide: FoodGuide;
+  culinaryGuide: CulinaryGuide; // Renamed from foodGuide to match new structure
   itinerary: DayPlan[];
   nearbyRecommendations: Recommendation[];
 }

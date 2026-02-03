@@ -6,14 +6,10 @@ import { TravelPlan, TravelInput } from "../types";
 const getGenAIClient = () => {
   let apiKey = process.env.API_KEY;
 
-  // SANITIZATION:
-  // Vercel or .env files might accidentally include quotes or whitespace.
-  // We strip them out to ensure a raw key.
   if (apiKey) {
     apiKey = apiKey.replace(/["']/g, "").trim();
   }
 
-  // Check if key is missing or is the dummy placeholder
   if (!apiKey || apiKey === 'dummy-key-for-build' || apiKey.length < 10) {
     throw new Error("API Anahtarı eksik veya hatalı! Vercel panelinde 'API_KEY' değerini kontrol edin. (Tırnak işareti veya boşluk olmamalı)");
   }
@@ -48,15 +44,48 @@ const travelPlanSchema: Schema = {
         required: ["placeName", "description", "distanceFromCenter", "reasonToVisit"]
       }
     },
-    foodGuide: {
+    culinaryGuide: {
       type: Type.OBJECT,
+      description: "A detailed guide about what to eat and WHERE to eat it.",
       properties: {
-        dishes: { type: Type.ARRAY, items: { type: Type.STRING } },
-        desserts: { type: Type.ARRAY, items: { type: Type.STRING } },
-        drinks: { type: Type.ARRAY, items: { type: Type.STRING } },
-        restaurantRecommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
+        savoryDelights: { 
+            type: Type.ARRAY, 
+            description: "Top 3-4 local main dishes.",
+            items: { 
+                type: Type.OBJECT, 
+                properties: {
+                    name: { type: Type.STRING, description: "Local name of the dish" },
+                    description: { type: Type.STRING, description: "Short appetizing description of ingredients" },
+                    bestPlaces: { type: Type.STRING, description: "Names of 1-2 specific famous restaurants known for THIS dish." }
+                } 
+            } 
+        },
+        sweetTreats: { 
+            type: Type.ARRAY, 
+            description: "Top 2-3 local desserts.",
+            items: { 
+                type: Type.OBJECT, 
+                properties: {
+                    name: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                    bestPlaces: { type: Type.STRING }
+                } 
+            } 
+        },
+        localDrinks: { 
+            type: Type.ARRAY, 
+            description: "Top 2 local drinks.",
+            items: { 
+                type: Type.OBJECT, 
+                properties: {
+                    name: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                    bestPlaces: { type: Type.STRING }
+                } 
+            } 
+        },
       },
-      required: ["dishes", "desserts", "drinks", "restaurantRecommendations"]
+      required: ["savoryDelights", "sweetTreats", "localDrinks"]
     },
     itinerary: {
       type: Type.ARRAY,
@@ -80,7 +109,7 @@ const travelPlanSchema: Schema = {
                 locationHint: { type: Type.STRING },
                 transportDetail: { 
                     type: Type.STRING, 
-                    description: "Specific instruction on how to get HERE from the PREVIOUS activity. If it's the first activity (Airport), describe how to exit. If Hotel, describe Airport->Hotel transfer (Bus numbers, Metro lines, Taxi cost). If Car, describe parking/route." 
+                    description: "Specific instruction on how to get HERE from the PREVIOUS activity. If this is the FIRST activity of the day, describe how to get here FROM THE HOTEL." 
                 }
               },
               required: ["placeName", "description", "type", "distanceFromPrevious", "estimatedTime", "locationHint", "transportDetail"]
@@ -91,7 +120,7 @@ const travelPlanSchema: Schema = {
       }
     }
   },
-  required: ["destination", "hotel", "logistics", "foodGuide", "itinerary", "nearbyRecommendations"]
+  required: ["destination", "hotel", "logistics", "culinaryGuide", "itinerary", "nearbyRecommendations"]
 };
 
 export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan> => {
@@ -103,14 +132,12 @@ export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan
     let transportInstruction = "";
     if (input.transportMode === 'plane') {
       transportInstruction = `User is traveling by PLANE. 
-      1. The FIRST activity of Day 1 MUST be "Arrival at [City Name] Airport".
-      2. Then proceed to the Hotel or City Center.
-      3. CRITICAL: In 'transportDetail', provide specific public transport options (Bus number, Metro line name) or Taxi estimate from the Airport to the Hotel.`;
+      Day 1 Start: "Arrival at [City Name] Airport". Then "Transfer to Hotel".
+      Transport Detail for Day 1: Provide Bus/Metro/Taxi options from Airport to Hotel.`;
     } else {
       transportInstruction = `User is traveling by PERSONAL CAR. 
-      1. They are driving from ${input.departure} directly to ${input.city}.
-      2. Do NOT include an Airport stop.
-      3. CRITICAL: In 'transportDetail', provide driving directions or parking advice.`;
+      Day 1 Start: "Arrival in [City Name]". Then "Check-in at Hotel".
+      Transport Detail for Day 1: Parking advice.`;
     }
 
     const prompt = `
@@ -119,17 +146,31 @@ export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan
       Departure From: ${input.departure}
       Destination: ${input.city}, ${input.country}
       Dates: ${input.startDate} to ${input.endDate} (Inclusive).
-      Accommodation: ${input.hotel ? input.hotel : "Not specified (Plan based on City Center)"}
+      Accommodation: ${input.hotel ? input.hotel : "City Center (Not specified)"}
       
       Transport Mode: ${input.transportMode.toUpperCase()}
       ${transportInstruction}
+      
+      CRITICAL ROUTING RULES (The Sandwich Rule):
+      1. **Start of Day**: EVERY Day (except Day 1 arrival moment) MUST start with an activity implying leaving the hotel (e.g., "Güne Başlangıç: Otelden Ayrılış" or the first sightseeing spot).
+         - IMPORTANT: The 'distanceFromPrevious' for the first activity of the day must be calculated FROM THE HOTEL, not from yesterday's last stop.
+         - 'transportDetail' must describe getting from Hotel -> First Stop.
+      
+      2. **End of Day**: EVERY Day MUST explicitly end with an activity named "Otele Dönüş" (Return to Hotel) or "Akşam Yemeği ve Otele Dönüş".
+         - 'transportDetail' must describe getting from the last spot -> Back to Hotel.
+         - Type for this activity should be 'hotel'.
+
+      3. **Logic**: Reset the location context every morning. Do not calculate travel time from Day 1 Night to Day 2 Morning. Day 2 Morning starts fresh from the hotel base.
+
+      CRITICAL CULINARY RULES:
+      1. **Specific Recommendations**: Do NOT just list "Pizza". List "Pizza Margherita" and for 'bestPlaces' provide a REAL, FAMOUS restaurant name in that city (e.g., "L'Antica Pizzeria da Michele").
+      2. **Professional Descriptions**: Describe the food appetizingly (ingredients, taste profile).
       
       Requirements:
       1. Language: Turkish (TR).
       2. Route must be logical (minimize travel time).
       3. Tone: Professional, informative, concise.
-      4. Focus on 'transportDetail': Give actionable advice (e.g., "Take Metro Line M1A to Yenikapi").
-      5. Weather: Estimate the weather for each day based on historical data for this season/month in the destination city.
+      4. Weather: Estimate the weather for each day based on historical data for this season/month.
       
       Response MUST be valid JSON matching the schema.
     `;
@@ -153,7 +194,6 @@ export const generateTravelPlan = async (input: TravelInput): Promise<TravelPlan
   } catch (error: any) {
     console.error("Gemini API Error:", error);
     
-    // Customize error message for better user experience
     if (error.message?.includes("400") || error.message?.includes("API key not valid")) {
       throw new Error("API Anahtarı Geçersiz (Hata Kodu: 400). Lütfen Vercel ayarlarında API_KEY'in başında/sonunda boşluk veya tırnak işareti olmadığından emin olun.");
     }
@@ -174,11 +214,10 @@ export const updateTravelPlan = async (currentPlan: TravelPlan, userRequest: str
       User Request to Modify: "${userRequest}"
       
       Task:
-      1. Update the 'itinerary', 'foodGuide', 'nearbyRecommendations' or 'logistics' based on the user request.
-      2. If the user asks to add a recommendation to the route, insert it into the most logical day and time slot to minimize travel distance.
-      3. Keep the existing structure valid.
-      4. Ensure new activities have detailed 'transportDetail' (how to get there).
-      5. Language: Turkish.
+      1. Update the 'itinerary', 'culinaryGuide', 'nearbyRecommendations' or 'logistics' based on the user request.
+      2. If updating food, ensure to provide descriptions and specific restaurant names.
+      3. **MAINTAIN THE LOGIC**: Ensure days still start/end at the Hotel.
+      4. Language: Turkish.
       
       Return the FULL updated JSON matching the original schema.
     `;

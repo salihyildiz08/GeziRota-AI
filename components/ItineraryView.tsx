@@ -106,7 +106,7 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, onUpdate, isUpdatin
       )}
       
       {/* Logistics & Tips Section */}
-      <Logistics logistics={plan.logistics} food={plan.foodGuide} />
+      <Logistics logistics={plan.logistics} food={plan.culinaryGuide} />
 
       {/* Main Timeline Itinerary */}
       <div className="space-y-16 mt-16">
